@@ -33,6 +33,29 @@ int main() {
 }
 ```
 
+To compile the C code, the [Dockerfile](./controllers/Dockerfile) must be updated; the environment variables needed for python can be removed and a call to `make` is needed to compile the source code:
+
+``` Dockerfile
+FROM cyberbotics/webots.cloud:R2023a-ubuntu20.04
+
+# Environment variables needed for Webots
+# https://cyberbotics.com/doc/guide/running-extern-robot-controllers#remote-extern-controllers
+ENV LD_LIBRARY_PATH=${WEBOTS_HOME}/lib/controller:${LD_LIBRARY_PATH}
+ARG WEBOTS_CONTROLLER_URL
+ENV WEBOTS_CONTROLLER_URL=${WEBOTS_CONTROLLER_URL}
+
+# Copies all the files of the controllers folder into the docker container
+RUN mkdir -p /usr/local/webots-project/controllers
+COPY . /usr/local/webots-project/controllers
+
+WORKDIR /usr/local/webots-project/controllers/participant
+
+# Compile controller
+RUN make
+    
+ENTRYPOINT ["./participant"]
+```
+
 [Bob](https://github.com/cyberbotics/wrestling-bob) is a more advanced robot controller able to win against Alice.
 
 [1]: https://webots.cloud/run?version=R2022b&url=https%3A%2F%2Fgithub.com%2Fcyberbotics%2Fwrestling%2Fblob%2Fmain%2Fworlds%2Fwrestling.wbt&type=competition "Leaderboard"
