@@ -1,2 +1,3 @@
 .vscode
-controllers/motions/.~lock*
+controllers/participant/build/*
+controllers/participant/participant
